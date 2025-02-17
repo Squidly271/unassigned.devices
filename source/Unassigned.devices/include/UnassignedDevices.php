@@ -667,7 +667,7 @@ switch ($_POST['action']) {
 							}
 							$o_disks		.= "<a style='cursor:pointer' class='exec info' onclick='".$spin."(\"".$disk_dev."\")'><i id='disk_orb-".$disk_dev."' class='fa fa-circle ".$orb."'></i><span>".$tool_tip."</span></a>";
 						} else {
-							$o_disks		.= "<i class='fa fa-refresh fa-spin ".$orb."}'></i>";
+							$o_disks		.= "<i class='fa fa-refresh fa-spin ".$orb."'></i>";
 						}
 					} else {
 						$o_disks			.= "<i class='fa fa-circle ".$orb."'></i>";
@@ -821,7 +821,7 @@ switch ($_POST['action']) {
 
 				/* Mount button table element. */
 				/* Make the mount button. */
-				$disable	= (($mount['fstype'] == "root") && ($var['shareDisk'] == "yes" || $var['mdState'] != "STARTED")) ? "disabled" : (($is_alive || $mounted) ? false : true);
+				$disable	= (($mount['fstype'] == "root") && ($var['shareDisk'] == "yes" || $var['shareUserExclusive'] == "yes" || $var['mdState'] != "STARTED")) ? "disabled" : (($is_alive || $mounted) ? false : true);
 				$disable	= (($mount['disable_mount']) || ($mount['invalid'])) ? true : $disable;
 				
 				/* Set up the mount button operation and text. */
@@ -1857,19 +1857,26 @@ switch ($_POST['action']) {
 
 		$rc			= true;
 
-		/* See if there is already a rootshare mount. */
-		foreach (get_samba_mounts() as $mount) {
-			if (($mount['path'] != $path) && ($mount['protocol'] == "ROOT")) {
-				$rc	= false;
+		/* Cannot add a root share if disk shares or exclusive shares are enabled. */
+		if (($var['shareDisk'] != "yes") && ($var['shareUserExclusive'] != "yes")) {
+			/* See if there is already a rootshare mount. */
+			foreach (get_samba_mounts() as $mount) {
+				if (($mount['path'] != $path) && ($mount['protocol'] == "ROOT")) {
+					$rc	= false;
+					break;
+				}
 			}
-		}
-		if ($rc) {
-			set_samba_config($device, "protocol", "ROOT");
-			set_samba_config($device, "ip", $ip);
-			set_samba_config($device, "path", $path);
-			set_samba_config($device, "share", safe_name($share, false));
+			if ($rc) {
+				set_samba_config($device, "protocol", "ROOT");
+				set_samba_config($device, "ip", $ip);
+				set_samba_config($device, "path", $path);
+				set_samba_config($device, "share", safe_name($share, false));
+			} else {
+				unassigned_log("Warning: Root Share is already assigned!");
+			}
 		} else {
-			unassigned_log("Warning: Root Share is already assigned!");
+			unassigned_log("Warning: 'Enable disk shares' and 'Permit exclusive shares' must be disabled to add a Root Share!");
+			$rc	= false;
 		}
 
 		echo json_encode($rc);

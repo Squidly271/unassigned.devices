@@ -845,9 +845,9 @@ $isUser0	= is_dir("/mnt/user0/");
 		</tbody>
 	</table>
 	<div id='remotes-buttons'>
-		<button onclick='add_samba_share()' <?=$disabled?>><?=_('Add Remote SMB')?>/<?=_('NFS Share')?></button>
-		<button onclick='add_iso_share()'><?=_('Add ISO File Share')?></button>
-		<button onclick='add_root_share()'><?=_('Add Root Share')?></button>
+		<button id="addSambaShare" onclick='add_samba_share()' <?=$disabled?>><?=_('Add Remote SMB')?>/<?=_('NFS Share')?></button>
+		<button id="addIsoShare" onclick='add_iso_share()'><?=_('Add ISO File Share')?></button>
+		<button id="addRootShareBtn" onclick='add_root_share()'><?=_('Add Root Share')?></button>
 	</div>
 </div>
 
@@ -1085,13 +1085,16 @@ $isUser0	= is_dir("/mnt/user0/");
 	<div data-question data-question-title="<?=_('Root Share')?>" data-question-button-done="<?=_('Add');?>">
 		<div data-question-content>
 			<p><?=_('This is a way to gather Unraid shares into one Root Share');?>.</p>
-			<?if ($var['shareDisk'] != "yes"):?>
+			<?if (($var['shareDisk'] != "yes") && ($var['shareUserExclusive'] != "yes")):?>
 			<p><span style="font-weight:bold;"><?=_('Note');?>:</span> <?=_('Use caution when gathering shares into one Root Share');?>. <?=_('Do not put files or folders into the /mnt/rootshare/ folder');?>.
 			<p><?=_('When you copy files between shares in the Root Share, the files may not end up on the expected disks');?>.</p>
 			<p><?=_('You can also subject yourself to security issues like ransomware by exposing all your shares in one Root Share');?>.</p>
-			<?else:?>
+			<?elseif ($var['shareDisk'] == "yes"):?>
 			<p><span style="font-weight:bold;"><?=_('Note');?>:</span> <?=_('Disk Sharing must be disabled to add a Root Share')?>.</p>
 			<p><?=_('Go to Settings->Global Share Settings and set Enable Disk Shares to Auto or Off');?>.</p>
+			<?elseif ($var['shareUserExclusive'] == "yes"):?>
+			<p><span style="font-weight:bold;"><?=_('Note');?>:</span> <?=_('Permit Exclusive Shares must be disabled to add a Root Share')?>.</p>
+			<p><?=_('Go to Settings->Global Share Settings and set Permit Exclusive Shares to No');?>.</p>
 			<?endif;?>
 		</div>
 	</div>
@@ -1105,7 +1108,6 @@ $isUser0	= is_dir("/mnt/user0/");
 			<p><?=_('Select the Root Share');?>.</p>
 			<p><?=_('User Shares - allow access to User Shares, including Cache and Pool files');?>.</p>
 			<p><?=_('User Shares without Pools - allow access to User Shares, but the Root Share will not include Cache and Pool files');?>.</p>
-			<p><?=_('Note');?>:&nbsp;<?= _('Exclusive Share files will not be accessible in a Root Share');?>.</p>
 		</div>
 	</div>
 	<div data-question-load></div>
