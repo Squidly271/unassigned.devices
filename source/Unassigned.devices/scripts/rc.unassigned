@@ -921,7 +921,7 @@ function unassigned_abort($script, $user_script = false) {
 
 	/* Remove the user script running file. */
 	if (($user_script) && (file_exists($file))) {
-		unlink($file);
+		@unlink($file);
 	}
 }
 
