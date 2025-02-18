@@ -311,7 +311,7 @@ switch ($COMMAND) {
 			} finally {
 				/* Ensure PID file is removed when script is done. */
 				if (file_exists($pidFile)) {
-					unlink($pidFile);
+					@unlink($pidFile);
 				}
 			}
 		}
@@ -334,7 +334,7 @@ switch ($COMMAND) {
 			} finally {
 				/* Ensure PID file is removed when script is done. */
 				if (file_exists($pidFile)) {
-					unlink($pidFile);
+					@unlink($pidFile);
 				}
 			}
 		}
