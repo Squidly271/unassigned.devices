@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"unassigned.devices">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.02.14">
+<!ENTITY version	"2025.02.24">
 <!ENTITY launch		"Main/UnassignedDevices">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/92462-unassigned-devices-managing-disk-drives-and-remote-shares-outside-of-the-unraid-array/">
-<!ENTITY MD5		"6e71bbfc2f15b1948b9f14c2ccb88424">
+<!ENTITY MD5		"3603740e905e224b8f6ddf2db367e6f2">
 ]>
 
 <PLUGIN name="&name;"
@@ -22,6 +22,11 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Fix: Disk Shares and Exclusive Shares cause issues with a Root Share.  A Root Share cannot be added or mounted now if 'Disk Shares' or 'Permit Exclusive Shares' are enabled in Global Share Settings.
+- Rem: Border to text boxes.  It will be added to Unraid 7.1.
+- Add: Support the new Recycle Bin operation.
+
+###2025.02.14
 - Add: Change to Unraid repository.
 
 ###2025.02.11
