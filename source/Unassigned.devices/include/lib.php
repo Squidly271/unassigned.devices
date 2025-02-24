@@ -2524,10 +2524,15 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 				$c		= preg_replace('/\n\s*\n\s*\n/s', PHP_EOL.PHP_EOL, implode(PHP_EOL, $c));
 				@file_put_contents($paths['smb_unassigned'], $c);
 
+				/* Add the [global] tag to the end of the share file. */
+				@file_put_contents($share_conf, "\n[global]\n", FILE_APPEND);
+
+				timed_exec(2, "/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1", true);
+
 				/* If the recycle bin plugin is installed, add the recycle bin to the share. */
 				if ($recycle_bin) {
 					/* Add the recycle bin parameters if plugin is installed */
-					$recycle_script = DOCROOT."/plugins/recycle.bin/scripts/configure_recycle_bin";
+					$recycle_script = DOCROOT."/plugins/recycle.bin/scripts/rc.recycle.bin";
 					if (is_file($recycle_script)) {
 						if (file_exists("/boot/config/plugins/recycle.bin/recycle.bin.cfg")) {
 							$recycle_bin_cfg	= @parse_plugin_cfg("recycle.bin");
@@ -2537,17 +2542,14 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 						if ((isset($recycle_bin_cfg['INCLUDE_UD'])) && ($recycle_bin_cfg['INCLUDE_UD'] == "yes")) {
 							if (is_file("/var/run/recycle.bin.pid")) {
 								unassigned_log("Enabling the Recycle Bin on share '{$share_name}'.");
+
+								/* Restart the recycle bin. */
+								exec(escapeshellcmd("$recycle_script restart 1>/dev/null"));
 							}
-							exec(escapeshellcmd("$recycle_script $share_conf"));
 						}
 					}
 				}
 			}
-
-			/* Add the [global] tag to the end of the share file. */
-			@file_put_contents($share_conf, "\n[global]\n", FILE_APPEND);
-
-			timed_exec(2, "/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1", true);
 		} else {
 			unassigned_log("Warning: Unassigned Devices are not set to be shared with SMB.");
 		}
