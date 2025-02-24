@@ -937,17 +937,8 @@ $isUser0	= is_dir("/mnt/user0/");
 :end
 
 <script>
-	/* Reload page if browser back button was used. */
-	window.addEventListener("pageshow", function (event) {
-		const historyTraversal = event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2);
-		if (historyTraversal) {
-			/* Handle page restore. */
-			window.location.reload();
-		}
-	});
-
 	/* Add diskio icon. */
-	$('#tab4').bind({
+	$('#tab4').on({
 		click:function() {
 			$('i.toggle').show('slow');
 		}
