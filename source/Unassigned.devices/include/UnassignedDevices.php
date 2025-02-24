@@ -87,7 +87,7 @@ function render_used_and_free_disk($disk, $mounted) {
 
 /* Get the partition information and render for html. */
 function render_partition($disk, $partition, $disk_line = false) {
-	global $paths, $shares_enabled;
+	global $paths, $shares_enabled, $version;
 
 	$out = [];
 	if (! empty($disk['partitions'])) {
@@ -182,7 +182,7 @@ function render_partition($disk, $partition, $disk_line = false) {
 
 		/* Disk read and write totals or rate. */
 		if ($disk_line) {
-			if (! isset($_COOKIE['diskio'])) {
+			if ((! isset($_COOKIE['diskio']) && version_compare($version['version'],"7.0.99", "<")) || (isset($_COOKIE['diskio']) && version_compare($version['version'],"7.0.99", ">"))) {
 				$out[]		= "<td>".my_number($disk['reads'])."</td>";
 				$out[]		= "<td>".my_number($disk['writes'])."</td>";
 			} else {
