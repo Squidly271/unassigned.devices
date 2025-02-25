@@ -182,7 +182,7 @@ function render_partition($disk, $partition, $disk_line = false) {
 
 		/* Disk read and write totals or rate. */
 		if ($disk_line) {
-			if ((! isset($_COOKIE['diskio']) && version_compare($version['version'],"7.0.99", "<")) || (isset($_COOKIE['diskio']) && version_compare($version['version'],"7.0.99", ">"))) {
+			if (isset($_COOKIE['diskio'])) {
 				$out[]		= "<td>".my_number($disk['reads'])."</td>";
 				$out[]		= "<td>".my_number($disk['writes'])."</td>";
 			} else {
@@ -634,7 +634,7 @@ switch ($_POST['action']) {
 				}
 
 				$device		= $disk['ud_device'] ? " (".$disk_device.")" : "";
-				$hdd_serial .= $disk['serial'].$device.$preclear_link.$clear_disk."<span id='preclear_".$disk['serial_short']."' style='display:block;'></span>";
+				$hdd_serial .= $disk['serial'].$device.$preclear_link.$clear_disk;
 
 				$o_disks .= "<tr class='toggle-disk'>";
 				if (! $disk['ud_unassigned_dev']) {
@@ -690,7 +690,7 @@ switch ($_POST['action']) {
 
 				if (! $parts) {
 					$rw = get_disk_reads_writes($disk['ud_dev'], $disk['device']);
-					if (! isset($_COOKIE['diskio'])) {
+					if (! empty($_COOKIE['diskio'])) {
 						$reads	= my_number($rw[0]);
 						$writes	= my_number($rw[1]);
 					} else {
@@ -821,7 +821,7 @@ switch ($_POST['action']) {
 
 				/* Mount button table element. */
 				/* Make the mount button. */
-				$disable	= (($mount['fstype'] == "root") && ($var['shareDisk'] == "yes" || $var['shareUserExclusive'] == "yes" || $var['mdState'] != "STARTED")) ? "disabled" : (($is_alive || $mounted) ? false : true);
+				$disable	= (($mount['fstype'] == "root") && ($var['shareDisk'] == "yes" || $var['mdState'] != "STARTED")) ? "disabled" : (($is_alive || $mounted) ? false : true);
 				$disable	= (($mount['disable_mount']) || ($mount['invalid'])) ? true : $disable;
 				
 				/* Set up the mount button operation and text. */
@@ -1857,8 +1857,8 @@ switch ($_POST['action']) {
 
 		$rc			= true;
 
-		/* Cannot add a root share if disk shares or exclusive shares are enabled. */
-		if (($var['shareDisk'] != "yes") && ($var['shareUserExclusive'] != "yes")) {
+		/* Cannot add a root share if disk shares shares are enabled. */
+		if ($var['shareDisk'] != "yes") {
 			/* See if there is already a rootshare mount. */
 			foreach (get_samba_mounts() as $mount) {
 				if (($mount['path'] != $path) && ($mount['protocol'] == "ROOT")) {
@@ -1875,7 +1875,7 @@ switch ($_POST['action']) {
 				unassigned_log("Warning: Root Share is already assigned!");
 			}
 		} else {
-			unassigned_log("Warning: 'Enable disk shares' and 'Permit exclusive shares' must be disabled to add a Root Share!");
+			unassigned_log("Warning: 'Enable disk shares' must be disabled to add a Root Share!");
 			$rc	= false;
 		}
 
