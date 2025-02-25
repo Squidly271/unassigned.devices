@@ -2146,8 +2146,8 @@ function do_mount_root($info) {
 
 	$rc		= false;
 
-	/* A rootshare device is treated similar to a CIFS mount.  The rootshare won't work if disks are shared or exclusive shares are enabled. */
-	if (($var['shareDisk'] != "yes") && ($var['shareUserExclusive'] != "yes")) {
+	/* A rootshare device is treated similar to a CIFS mount.  The rootshare won't work if disks are shared. */
+	if ($var['shareDisk'] != "yes") {
 		/* If the root server is not online, run the ping update and see if ping status needs to be refreshed. */
 		if (! $info['alive']) {
 			/* Update the root share server ping status. */
@@ -2195,7 +2195,7 @@ function do_mount_root($info) {
 			unassigned_log("Root Server '".$info['ip']."' is offline and remote share '".$info['path']."' cannot be mounted."); 
 		}
 	} else {
-		unassigned_log("Error: Root Server share '".$info['device']."' cannot be mounted with Disk Sharing or exclusive shares enabled."); 
+		unassigned_log("Error: Root Server share '".$info['device']."' cannot be mounted with Disk Sharing enabled."); 
 	}
 
 	return $rc;
