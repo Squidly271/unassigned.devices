@@ -109,18 +109,12 @@ function getPreclearContent() {
 			/* Manage leftover icons in the footer */
 			let leftoverIcons = $("[id^=preclear_footer_]");
 			$.each(data.status, function (id, statusData) {
-				const target = $(`#preclear_${id}`);
 				const iconId = `preclear_footer_${id}`;
 
 				/* Filter out the current icon from leftover icons */
 				leftoverIcons = $.grep(leftoverIcons, function (el) {
 					return $(el).attr('id') !== iconId;
 				});
-
-				/* Update the status icon and tooltip content */
-				target.html(
-					`<i style='margin-left: -10px;' class='icon-preclear'></i><span style='margin-left: 4px;'></span>${statusData.status}`
-				);
 
 				/* Add and initialize a tooltip for the icon if it doesn't already exist */
 				if (!$(`#${iconId}`).length) {
@@ -385,7 +379,7 @@ function startPreclear(serial, multiple = "no") {
 			$.post(PreclearURL, opts, function (data) {
 				preclearShowResult(data);
 			}, "json").always(() => {
-				preclearUpdateContent();
+				getPreclearContent();
 			}).fail(() => {
 				preclearShowResult(false);
 			});
@@ -406,7 +400,7 @@ function stopPreclear(serial, ask, multiple = "no") {
 	if (ask !== "ask") {
 		$.post(PreclearURL, { action: "stop_preclear", serial: serial }, function (data) {
 			preclearShowResult(data);
-			preclearUpdateContent();
+			getPreclearContent();
 		}, 'json').fail(() => {
 			preclearShowResult(false);
 		});
@@ -491,7 +485,7 @@ function stopPreclear(serial, ask, multiple = "no") {
 			if (opts.serial.length > 0) {
 				$.post(PreclearURL, opts, function (data) {
 					preclearShowResult(data);
-					preclearUpdateContent();
+					getPreclearContent();
 				}, 'json').fail(() => {
 					preclearShowResult(false);
 				});
@@ -796,7 +790,7 @@ function getResumablePreclear(serial) {
 					$.post(PreclearURL, opts)
 						.done(function (response) {
 							preclearShowResult(response);
-							preclearUpdateContent();
+							getPreclearContent();
 						})
 						.fail(function () {
 							preclearShowResult(false);
@@ -1075,14 +1069,4 @@ function preclearSetSorting() {
 		start: preclearStartSorting,
 		stop: preclearStopSorting
 	});
-}
-
-/*
-	Function to update preclear content and refresh data.
-*/
-function preclearUpdateContent() {
-	if (typeof usb_disks === "function") {
-		usb_disks();
-	}
-	getPreclearContent();
 }
