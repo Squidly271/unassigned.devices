@@ -3736,7 +3736,15 @@ function get_udev_info($dev, $udev = null) {
 	$device	= safe_name($dev);
 
 	/* Read the state file. */
-	$state	= is_file($paths['state']) ? @parse_ini_file($paths['state'], true, INI_SCANNER_RAW) : [];
+	$state = [];
+	if (is_file($paths['state'])) {
+		$parsed = @parse_ini_file($paths['state'], true, INI_SCANNER_RAW);
+
+		/* Be sure the parse on the ini file was successful. */
+		if ($parsed !== false) {
+			$state = $parsed;
+		}
+	}
 
 	/* If the udev is not null, save it to the unassigned.devices.ini file. */
 	if (isset($udev)) {
@@ -3746,7 +3754,15 @@ function get_udev_info($dev, $udev = null) {
 		$lock_file	= get_file_lock("udev");
 
 		/* Make file changes. */
-		$state	= is_file($paths['state']) ? @parse_ini_file($paths['state'], true, INI_SCANNER_RAW) : [];
+		$state = [];
+		if (is_file($paths['state'])) {
+			$parsed = @parse_ini_file($paths['state'], true, INI_SCANNER_RAW);
+
+			/* Be sure the parse on the ini file was successful. */
+			if ($parsed !== false) {
+				$state = $parsed;
+			}
+		}
 
 		/* Save this entry unless the ACTION is remove. */
  		if ($udev['ACTION'] != "remove") {
@@ -3769,6 +3785,8 @@ function get_udev_info($dev, $udev = null) {
 				}
 			}
 		}
+
+		/* Save the updated contents. */
 		save_ini_file($paths['state'], $state);
 
 		/* Write to temp file and then move to destination file for diagnostics. */
@@ -3792,7 +3810,15 @@ function get_udev_info($dev, $udev = null) {
 			$lock_file	= get_file_lock("udev");
 
 			/* Make file changes. */
-			$state	= is_file($paths['state']) ? @parse_ini_file($paths['state'], true, INI_SCANNER_RAW) : [];
+			$state = [];
+			if (is_file($paths['state'])) {
+				$parsed = @parse_ini_file($paths['state'], true, INI_SCANNER_RAW);
+
+				/* Be sure the parse on the ini file was successful. */
+				if ($parsed !== false) {
+					$state = $parsed;
+				}
+			}
 
 			$state[$device] = $dev_state;
 
