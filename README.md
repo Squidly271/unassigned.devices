@@ -1,3 +1,5 @@
+NOTE: Due to the transferring of the plugin from the original repository to this one, the txz's which are dated 2025.02.14 MUST always remain in place and cannot be deleted from this repository
+
 Unassigned Devices and Unassigned Devices Preclear plugins for Unraid Server
 ============================================================================
 
