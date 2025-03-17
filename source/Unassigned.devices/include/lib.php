@@ -110,10 +110,13 @@ $CMD_DEBUG		= 8;
 
 /* Read in the UD configuration file.  Because the config file is in /tmp/ we cannot use parse_plugin_cfg(). */
 $default_file	= $paths['default_file'];
-$config_ini		= @parse_ini_file(UD_CONFIG_FILE, true);
 $default_cfg	= @parse_ini_file($default_file, true);
+$config_ini		= @parse_ini_file(UD_CONFIG_FILE, true);
 $cfg['Config']	= file_exists($default_file) ? parse_ini_file($default_file, true) : [];
-$ud_config		= file_exists(UD_CONFIG_FILE) ? array_replace_recursive($cfg, parse_ini_file(UD_CONFIG_FILE, true)) : $cfg;
+$ud_config		= ($config_ini !== false) ? array_replace_recursive($cfg, parse_ini_file(UD_CONFIG_FILE, true)) : $cfg;
+
+/* Adjust the config file for some legacy parameters that cause problems. */
+adjust_config_params();
 
 /* Read in the Samba configuration file. */
 $config_ini		= @parse_ini_file($paths['samba_mount'], true, INI_SCANNER_RAW);
@@ -126,7 +129,7 @@ $iso_config		= ($config_ini !== false) ? $config_ini : [];
 $DEBUG_LEVEL	= (int) get_config("Config", "debug_level");
 
 /* See if the UD settings are set for either SMB or NFS sharing. */
-$shares_enabled	= ((get_config("Config", "smb_security") != "no") || (get_config("Config", "nfs_export") == "yes"));
+$shares_enabled	= ((get_config("Config", "SMB_Sharing") != "no") || (get_config("Config", "NFS_Export") == "yes"));
 
 /* Read Unraid variables file. Used to determine disks not assigned to the array and other array parameters. */
 if (! isset($var)){
@@ -414,6 +417,51 @@ class MiscUD
 /* Echo variable to GUI for debugging. */
 function _echo($m) {
 	echo "<pre>".print_r($m,true)."</pre>";
+}
+
+/* Adjust some configuration parameters that don't make sense. */
+function adjust_config_params() {
+	global	$ud_config, $users;
+
+	/* Rename smb_security to SMB_Sharing. */
+	if (isset($ud_config['Config']['smb_security']) && (! isset($ud_config['Config']['SMB_Sharing']))) {
+		$ud_config['Config']['SMB_Sharing']	= $ud_config['Config']['smb_security'];
+		unset($ud_config['Config']['smb_security']);
+	}
+
+	/* Rename smb_version to SMB_Version. */
+	if (isset($ud_config['Config']['smb_version']) && (! isset($ud_config['Config']['SMB_Version']))) {
+		$ud_config['Config']['SMB_Version']	= $ud_config['Config']['smb_version'];
+		unset($ud_config['Config']['smb_version']);
+	}
+
+	/* Rename nfs_export to NFS_Export. */
+	if (isset($ud_config['Config']['nfs_export'])) {
+		if (! isset($ud_config['Config']['NFS_Export'])) {
+			$ud_config['Config']['NFS_Export']	= $ud_config['Config']['nfs_export'];
+		}
+		unset($ud_config['Config']['nfs_export']);
+	}
+
+	/* Rename nfs_security to NFS_Security. */
+	if (isset($ud_config['Config']['nfs_security'])) {
+		if (! isset($ud_config['Config']['NFS_Security'])) {
+			$ud_config['Config']['NFS_Security']	= $ud_config['Config']['nfs_security'];
+		}
+		unset($ud_config['Config']['nfs_security']);
+	}
+
+	/* Remove any SMB users in the configuration file that are no longer valid users. */
+	$usrs	= array_keys($users);
+	foreach ($ud_config['Config'] as $key => $value) {
+		if (preg_match('/^smb_(.+)$/', $key, $matches)) {
+			if (!in_array($matches[1], $usrs)) {
+				unset($ud_config['Config'][$key]);
+			}
+		}
+	}
+
+	return;
 }
 
 /* Get a file lock so changes can be made to a cfg or ini file. */
@@ -2383,7 +2431,7 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 	$config							= $ud_config["Config"];
 
 	/* Initialize some settings to make sure they are defined. */
-	$smb_security					= $config['smb_security'] ?? "";
+	$SMB_Sharing					= $config['SMB_Sharing'] ?? "";
 	$config['force_user']			= $config['force_user'] ?? "";
 	$config['hidden_share']			= $config['hidden_share'] ?? "";
 
@@ -2397,14 +2445,14 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 	$time_mach_vol_size				= (($config['time_machine'] == "yes") && ($config['time_mach_vol_size'])) ? "\n\tfruit:time machine max size = ".intval($config['time_mach_vol_size'])."M" : "";
 
 	/* Set whether or not the share is browseable and set browseable setting. */
-	$hidden_share					= ($smb_security == "hidden") ? "\n\tbrowseable = no" : "\n\tbrowseable = yes";
+	$hidden_share					= ($SMB_Sharing == "hidden") ? "\n\tbrowseable = no" : "\n\tbrowseable = yes";
 
 	/* Is the Mac OS interoperability setting on? */
 	$enable_fruit					= ($var['enableFruit'] == "yes");
 
 	/* Add mountpoint to samba shares. */
 	if ($var['shareSMBEnabled'] != "no") {
-		if ($smb_security != "no") {
+		if ($SMB_Sharing != "no") {
 			/* Remove special characters from share name. */
 			$share_name		= str_replace( array("(", ")"), "", basename($dir));
 
@@ -2458,7 +2506,7 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 				$vfs_objects	= "\n\t".$vfs_objects;
 			}
 
-			if (($smb_security == "yes") || ($smb_security == "hidden")) {
+			if (($SMB_Sharing == "yes") || ($SMB_Sharing == "hidden")) {
 				$read_users		= [];
 				$write_users	= [];
 				$valid_users	= array_keys($users);;
@@ -2527,7 +2575,7 @@ function add_smb_share($dir, $recycle_bin = false, $fat_fruit = false) {
 				/* Add the [global] tag to the end of the share file. */
 				@file_put_contents($share_conf, "\n[global]\n", FILE_APPEND);
 
-				timed_exec(2, "/usr/bin/smbcontrol $(cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1", true);
+				exec("/usr/bin/smbcontrol all reload-config 2>&1");
 
 				/* If the recycle bin plugin is installed, add the recycle bin to the share. */
 				if ($recycle_bin) {
@@ -2582,8 +2630,8 @@ function rm_smb_share($dir) {
 		$c = array_merge(preg_grep("/include/i", $c, PREG_GREP_INVERT), $smb_unassigned_includes);
 		$c = preg_replace('/\n\s*\n\s*\n/s', PHP_EOL.PHP_EOL, implode(PHP_EOL, $c));
 		@file_put_contents($paths['smb_unassigned'], $c);
-		timed_exec(2, "/usr/bin/smbcontrol $(/bin/cat /var/run/smbd.pid 2>/dev/null) close-share ".escapeshellarg($share_name)." 2>&1", true);
-		timed_exec(2, "/usr/bin/smbcontrol $(/bin/cat /var/run/smbd.pid 2>/dev/null) reload-config 2>&1", true);
+		exec("/usr/bin/smbcontrol all close-share ".escapeshellarg($share_name)." 2>&1");
+		exec("/usr/bin/smbcontrol all reload-config 2>&1");
 	}
 
 	return true;
@@ -2595,7 +2643,7 @@ function add_nfs_share($dir) {
 
 	/* If NFS is enabled and export setting is 'yes' then add NFS share. */
 	if ($var['shareNFSEnabled'] == "yes") {
-		if (get_config("Config", "nfs_export") == "yes") {
+		if (get_config("Config", "NFS_Export") == "yes") {
 			$reload = false;
 			foreach (array("/etc/exports", "/etc/exports-") as $file) {
 				$c = (is_file($file)) ? @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
@@ -2614,7 +2662,7 @@ function add_nfs_share($dir) {
 					$fsid++;
 				}
 
-				$nfs_sec = get_config("Config", "nfs_security");
+				$nfs_sec = get_config("Config", "NFS_Security");
 				if ($nfs_sec == "private") {
 					$nfs_rule = get_config("Config", "nfs_rule");
 					$sec = ($nfs_rule) ? explode(";", $nfs_rule) : ["*(rw,sec=sys,insecure,anongid=100,anonuid=99,no_root_squash)"];

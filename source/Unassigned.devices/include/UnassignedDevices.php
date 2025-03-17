@@ -183,11 +183,21 @@ function render_partition($disk, $partition, $disk_line = false) {
 		/* Disk read and write totals or rate. */
 		if ($disk_line) {
 			if (isset($_COOKIE['diskio'])) {
-				$out[]		= "<td>".my_number($disk['reads'])."</td>";
-				$out[]		= "<td>".my_number($disk['writes'])."</td>";
+				if (version_compare($version['version'],"7.0.0", ">")) {
+					$out[]		= "<td>".my_number($disk['reads'])."</td>";
+					$out[]		= "<td>".my_number($disk['writes'])."</td>";
+				} else {
+					$out[]		= "<td>".my_diskio($disk['read_rate'])."</td>";
+					$out[]		= "<td>".my_diskio($disk['write_rate'])."</td>";
+				}
 			} else {
-				$out[]		= "<td>".my_diskio($disk['read_rate'])."</td>";
-				$out[]		= "<td>".my_diskio($disk['write_rate'])."</td>";
+				if (version_compare($version['version'],"7.0.0", ">")) {
+					$out[]		= "<td>".my_diskio($disk['read_rate'])."</td>";
+					$out[]		= "<td>".my_diskio($disk['write_rate'])."</td>";
+				} else {
+					$out[]		= "<td>".my_number($disk['reads'])."</td>";
+					$out[]		= "<td>".my_number($disk['writes'])."</td>";
+				}
 			}
 		} else {
 			$out[]			= "<td></td>";

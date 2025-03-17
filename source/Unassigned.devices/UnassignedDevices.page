@@ -997,9 +997,17 @@ $isUser0	= is_dir("/mnt/user0/");
 
 		/* Show the current diskio icon based on the current diskio cookie value. */
 		if ($.cookie('diskio') === undefined) {
+			<?if (version_compare($version['version'],"7.0.0", ">")):?>
 			$('i.toggle').removeClass('fa-list').addClass('fa-tachometer');
-		} else {
+			<?else:?>
 			$('i.toggle').removeClass('fa-tachometer').addClass('fa-list');
+			<?endif;?>
+		} else {
+			<?if (version_compare($version['version'],"7.0.0", ">")):?>
+			$('i.toggle').removeClass('fa-tachometer').addClass('fa-list');
+			<?else:?>
+			$('i.toggle').removeClass('fa-list').addClass('fa-tachometer');
+			<?endif;?>
 		}
 
 		/* Update the show-disks status. */

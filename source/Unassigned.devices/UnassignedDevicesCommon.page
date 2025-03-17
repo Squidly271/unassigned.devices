@@ -227,9 +227,9 @@ _(Remote Share Mount Wait Time)_ :
 :end
 
 _(Specify SMB Version when Mounting Remote Shares)_?
-: <select name="smb_version" size="1">
-  <?=mk_option($UD_cfg['Config']['smb_version'], "no", "_(No)_");?>
-  <?=mk_option($UD_cfg['Config']['smb_version'], "yes", "_(Yes)_");?>
+: <select name="SMB_Version" size="1">
+  <?=mk_option($UD_cfg['Config']['SMB_Version'], "no", "_(No)_");?>
+  <?=mk_option($UD_cfg['Config']['SMB_Version'], "yes", "_(Yes)_");?>
   </select>
 
 :ud_settings_specify_smb_vers_plug:
