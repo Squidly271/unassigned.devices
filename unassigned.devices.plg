@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"unassigned.devices">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.02.25">
+<!ENTITY version	"2025.03.17">
 <!ENTITY launch		"Main/UnassignedDevices">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/92462-unassigned-devices-managing-disk-drives-and-remote-shares-outside-of-the-unraid-array/">
-<!ENTITY MD5		"47969e37935d948ee7bba5fc04ba5c02">
+<!ENTITY MD5		"43ca8b41aa41e38642403c26f127d080">
 ]>
 
 <PLUGIN name="&name;"
@@ -22,6 +22,9 @@
 <CHANGES>
 ##&name;
 ###&version;
+- Various fixes
+
+###2025.02.25
 - Rem: Do not update UD with the disk preclear status.  Refreshing and updating the status of a preclear on the UD page has become complicated and is not really necessary when the preclear page and the footer icon can give the status.  A preclear can still be started on the UD page.
 - Rem: Restriction that Exclusive Shares be disabled to add a Root Share.  Keep an eye in the Root Share recycle bin as some issues have been noted in testing.
 
