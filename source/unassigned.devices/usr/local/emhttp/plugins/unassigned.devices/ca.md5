@@ -33,11 +33,12 @@ eb398ec6d6ff01a219ace990dc9d4c2e  ./icons/nfs-radio.png
 81a7acf49f55721f5b1b806c8224c8ee  ./icons/scriptlog.png
 9d45a531262d61d17afdaccdb392c6b9  ./icons/smb-radio.png
 80ce8aaf4adfbdda3fb023627be2ecfc  ./icons/smbsettings.png
+3508bc186813bcfb56a934ea6df7567d  ./include/UnassignedDevices.php
 a5288d69de2c083244ff82835e7c7cc5  ./include/fsck.php
 13b9434d513705c2f981b831c3da1889  ./include/lib.php
 c6f82243a5d86242d36f1d62c858113d  ./include/script.php
 3b5dd3a33b007ae04edc8780afc27da0  ./include/server_test.php
-3508bc186813bcfb56a934ea6df7567d  ./include/UnassignedDevices.php
+dc69c8def873fd7b82ea1279cf159da3  ./include/update.php
 81223b2a03796d64c3172c043de8ecd9  ./scripts/copy_config.sh
 9090f0bbf3bb5d83d5b406dd4cc86ceb  ./scripts/get_ud_stats
 5142388e3cae10598dbadf78b328d75a  ./scripts/hosts_port_ping.sh
@@ -47,3 +48,4 @@ c6f82243a5d86242d36f1d62c858113d  ./include/script.php
 3eb3131e23557c56dbc4e92d1f2ef419  ./scripts/rc.started
 4fcdfd8af198c595e9b36db07f8569ec  ./scripts/rc.unassigned
 d14e43cfd7d76f624ea9c0dbdb03ba88  ./scripts/ud_diagnostics
+100c0408ab44d3b58bffad27a99f6416  ./99_persistent_unassigned.rules
