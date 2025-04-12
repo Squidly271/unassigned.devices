@@ -8,10 +8,14 @@ cp /etc/udev/rules.d/99_persistent_unassigned.rules /tmp/GitHub/unassigned.devic
 cp /tmp/GitHub/unassigned.devices/source/update.php /tmp/GitHub/unassigned.devices/source/unassigned.devices/usr/local/emhttp/plugins/unassigned.devices/include/
 
 cd /tmp/GitHub/unassigned.devices/source/unassigned.devices/usr/local/emhttp/plugins/unassigned.devices
+
+# Delete symlinks made into the code by the plugin installer
+find . -type l -exec rm -f {} \;
+
 # Delete Apple Metadata files
 find . -maxdepth 9999 -noleaf -type f -name "._*" -exec rm -v "{}" \;
-rm -f  ca.md5
-find . -type f -exec md5sum {} + > /tmp/ca.md5
-mv /tmp/ca.md5 ca.md5
+rm -f  ud.md5
+find . -type f -exec md5sum {} + > /tmp/ud.md5
+mv /tmp/ud.md5 ud.md5
 
 
