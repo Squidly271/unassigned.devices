@@ -7,7 +7,7 @@
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/92462-unassigned-devices-managing-disk-drives-and-remote-shares-outside-of-the-unraid-array/">
-<!ENTITY MD5		"335f38ca7b983e233f6f73eed92666ec"
+<!ENTITY MD5		"335f38ca7b983e233f6f73eed92666ec">
 ]>
 
 <PLUGIN name="&name;"
