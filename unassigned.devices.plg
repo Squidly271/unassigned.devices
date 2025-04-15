@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"unassigned.devices">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.03.17">
+<!ENTITY version	"2025.04.14">
 <!ENTITY launch		"Main/UnassignedDevices">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/92462-unassigned-devices-managing-disk-drives-and-remote-shares-outside-of-the-unraid-array/">
-<!ENTITY MD5		"43ca8b41aa41e38642403c26f127d080">
+<!ENTITY MD5		"335f38ca7b983e233f6f73eed92666ec"
 ]>
 
 <PLUGIN name="&name;"
@@ -21,7 +21,12 @@
 
 <CHANGES>
 ##&name;
-###&version;
+
+###2025.04.14
+- Fix spurious syslog error on Unraid 7.1.x
+- Reorganize files and build process
+
+###2025.03.17
 - Various fixes
 
 ###2025.02.25
@@ -2391,8 +2396,9 @@ This plugin lets you manage disks and remote shares outside of the array.
 <!--
 Get the plugin bundle.
 -->
-<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tgz">
-<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;-x86_64-1.txz" Run="upgradepkg --install-new --reinstall">
+<URL>&gitURL;/archive/&name;-&version;-x86_64-1.txz</URL>
 <MD5>&MD5;</MD5>
 </FILE>
 
@@ -2402,7 +2408,7 @@ The 'pre-install' script.
 <FILE Run="/bin/bash">
 <INLINE>
 # Remove emhttp files so we can re-install.
-rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
+#rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
 
 # Remove old 'bundle' files.
 rm -f $(ls /boot/config/plugins/&name;/*.tgz 2>/dev/null | grep -v '&version;')
@@ -2479,24 +2485,31 @@ touch /etc/samba/smb-unassigned.conf
 mkdir -p /boot/config/plugins/&name;
 
 # Install the 'bundle'.
-tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/plugins 2>/dev/null
+#tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/plugins 2>/dev/null
 
-# Move the rules file
-mv /usr/local/emhttp/plugins/&name;/99_persistent_unassigned.rules /etc/udev/rules.d/
+# Create a symlink to the rules file
+echo "Creating symlink for udev rules"
+rm -f /etc/udev/rules.d/99_persistent_unassigned.rules
+ln -sf /usr/local/emhttp/plugins/&name;/udev/99_persistent_unassigned.rules /etc/udev/rules.d/
 chmod 644 -R /etc/udev/rules.d/99_persistent_unassigned.rules 2>/dev/null
 
 # Create a symlink to rm.
+echo "Creating symlink for rm"
+rm -f /usr/local/emhttp/plugins/&name;/scripts/rm
 ln -sf /bin/rm /usr/local/emhttp/plugins/&name;/scripts/
 
 # Fix permissions of executable files
+echo "Fixing permissions"
 chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
 
 # Create a symlink to unassigned devices scripts.
+echo "Creating symlinks to scripts"
 ln -sf /usr/local/emhttp/plugins/&name;/scripts/rc.unassigned /usr/local/sbin
 ln -sf /usr/local/emhttp/plugins/&name;/scripts/mkmbr.sh /usr/local/sbin
 ln -sf /usr/local/emhttp/plugins/&name;/scripts/ud_diagnostics /usr/local/sbin
 
 # Create state folder and mount points
+echo "Creating state and mount point folders"
 mkdir -p /mnt/disks/ /mnt/remotes/ /mnt/addons/ /mnt/rootshare/ /var/state/&name;/
 
 # Create a tmpfs mountpoint at /mnt/disks
@@ -2510,6 +2523,7 @@ if ! mountpoint -q /mnt/disks 2>/dev/null; then
     fi
   done
   if [ $mounted_disks == "n" ]; then
+    echo "Creating tmpfs mount point for /mnt/disks"
     mount -t tmpfs -o size=1M tmpfs /mnt/disks
   else
     touch /var/state/&name;/reboot_required
@@ -2528,6 +2542,7 @@ if ! mountpoint -q /mnt/remotes 2>/dev/null; then
     fi
   done
   if [ $mounted_remotes == "n" ]; then
+    echo "Creating tmpfs mount point for /mnt/remotes"
     mount -t tmpfs -o size=1M tmpfs /mnt/remotes
   else
     touch /var/state/&name;/reboot_required
@@ -2546,6 +2561,7 @@ if ! mountpoint -q /mnt/addons 2>/dev/null; then
     fi
   done
   if [ $mounted_addons == "n" ]; then
+    echo "Creating tmpfs mount point for /mnt/addons"
     mount -t tmpfs -o size=1M tmpfs /mnt/addons
   else
     touch /var/state/&name;/reboot_required
@@ -2564,6 +2580,7 @@ if ! mountpoint -q /mnt/rootshare 2>/dev/null; then
     fi
   done
   if [ $mounted_rootshare == "n" ]; then
+    echo "Creating tmpfs mount point for /mnt/rootshare"
     mount -t tmpfs -o size=1M tmpfs /mnt/rootshare
   else
     touch /var/state/&name;/reboot_required
@@ -2610,9 +2627,8 @@ first_four_chars=${version:0:4}
 # Update the update.php file so device settings will save the script correctly
 # Check if the first 4 characters are 6.11 or 6.12
 if [[ $first_four_chars == "6.11" || $first_four_chars == "6.12" ]]; then
-	cp /usr/local/emhttp/plugins/&name;/include/update.php /usr/local/emhttp/update.php
-else
-	rm /usr/local/emhttp/plugins/&name;/include/update.php
+  echo "Unraid 6.11 / 6.12:  Replacing update.php file"	
+  cp /usr/local/emhttp/plugins/&name;/scripts/update.php /usr/local/emhttp/update.php
 fi
 
 echo ""
@@ -2620,6 +2636,7 @@ echo "-----------------------------------------------------------"
 echo " &name; has been installed."
 echo " Copyright 2015, gfjardim"
 echo " Copyright 2016-2025, &author;"
+echo " Copyright 2025 Lime Technology Inc"
 echo " Version: &version;"
 echo ""
 echo " Note:"
