@@ -15,7 +15,7 @@ Link="nav-user"
 
 /* Load the UD preclear library file if it is not already loaded. */
 require_once("plugins/unassigned.devices.preclear/include/lib.php");
-
+$unraid71 = version_compare($var['version']??"","7.0.9",">");
 $Preclear = new Preclear;
 ?>
 
@@ -32,7 +32,11 @@ $Preclear = new Preclear;
 
 	$(function()
 	{
-		footer = $("<span id='preclear-footer'></span>").insertAfter("div#footer > span#copyright").css("float","right").css("margin-right", "6px");
+		<? if ($unraid71): ?>
+            footer = $("<span id='preclear-footer'></span>").insertBefore("div.footer-right > span#copyright").css("float","right").css("margin-right", "6px");
+		<? else: ?>
+			footer = $("<span id='preclear-footer'></span>").insertAfter("div#footer > span#copyright").css("float","right").css("margin-right", "6px");
+		<? endif; ?>
 		getPreclearContent();
 		if ( $('#usb_devices_list').length ) {
 			$("#usb_devices_list").arrive("span[id^=preclear_]",{onceOnly:false},function()

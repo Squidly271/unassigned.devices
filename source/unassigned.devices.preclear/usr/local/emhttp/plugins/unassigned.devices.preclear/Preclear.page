@@ -31,8 +31,9 @@ if (version_compare($version['version'], '6.12.0-beta5', '>')) {
 	$title_div		= "div#title";
 }
 ?>
-<link rel="stylesheet" href="<?autov("/plugins/dynamix.docker.manager/styles/style-$theme.css")?>">
-
+<? if (is_file("usr/local/emhttp/plugins/dynamix.docker.manager/styles/style-$theme.css") ):?>
+	<link rel="stylesheet" href="<?autov("/plugins/dynamix.docker.manager/styles/style-$theme.css")?>">
+<? endif; ?>
 <link rel="stylesheet" href="<?autov("/plugins/".UNASSIGNED_PRECLEAR_PLUGIN."/assets/style-$theme.css")?>">
 <link rel="stylesheet" href="<?autov("/plugins/".UNASSIGNED_PRECLEAR_PLUGIN."/assets/preclear.css")?>">
 
