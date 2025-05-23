@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"unassigned.devices.preclear">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.02.25">
+<!ENTITY version	"2025.05.22">
 <!ENTITY launch		"Tools/Preclear">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/unassigned.devices/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/120567-unassigned-devices-preclear-a-utility-to-preclear-disks-before-adding-them-to-the-array/">
-<!ENTITY MD5		"cc5cdbc880cbec50747b2984601982f1">
+<!ENTITY MD5		"96c3e070e942e5d4e14e5dcbf868d98b">
 ]>
 <PLUGIN name="&name;"
 		author="&author;"
@@ -22,6 +22,11 @@
 ###&name;
 ###&version;
 - Rem: Do not update UD with the disk preclear status.  Refreshing and updating the status of a preclear on the UD page has become complicated and is not really necessary when the preclear page and the footer icon can give the status.  A preclear can still be started on the UD page.
+
+###2025.05.22
+- Changed: Repository overhaul
+- Fixed: Missing preclear information on footer when running 7.1.0+
+- Fixed: PHP error from attempting to load non-existent stylesheet on 7.1.0+
 
 ###2025.02.14
 - Add: Change to Unraid repository.
@@ -228,8 +233,8 @@ fi
 <!--
 Get the plugin bundle.
 -->
-<FILE Name="/boot/config/plugins/&name;/&name;-&version;.tgz">
-<URL>"&gitURL;/&name;-&version;.tgz"</URL>
+<FILE Name="/boot/config/plugins/&name;/&name;-&version;-x86_64-1.txz" Run="upgradepkg --install-new --reinstall">
+<URL>&gitURL;/archive/&name;-&version;-x86_64-1.txz</URL>
 <MD5>&MD5;</MD5>
 </FILE>
 
@@ -278,9 +283,6 @@ The 'pre-install' script.
 -->
 <FILE Run="/bin/bash">
 <INLINE>
-# Remove emhttp files so we can re-install.
-rm -rf /usr/local/emhttp/plugins/&name;/* 2>/dev/null
-
 # Remove old 'bundle' files.
 rm -f $(ls /boot/config/plugins/&name;/&name;*.tgz 2>/dev/null | grep -v '&version;')
 </INLINE>
@@ -318,9 +320,6 @@ fi
 # Create plugin directory
 mkdir -p /boot/config/plugins/&name;
 
-# Install the 'bundle'.
-tar -xf /boot/config/plugins/&name;/&name;-&version;.tgz -C /usr/local/emhttp/plugins 2>/dev/null
-
 # Fix permissions of executable files
 chmod +x /usr/local/emhttp/plugins/&name;/scripts/* /usr/local/emhttp/plugins/&name;/event/*
 
@@ -356,6 +355,7 @@ echo "-----------------------------------------------------------"
 echo " &name; has been installed."
 echo " Copyright 2015-2020, gfjardim"
 echo " Copyright 2022-2025, &author;"
+echo " Copyright 2025, Lime Technology"
 echo " Version: &version;"
 echo "-----------------------------------------------------------"
 echo ""
@@ -375,6 +375,8 @@ The 'remove' script.
 rm -rf /var/local/emhttp/plugins/diskinfo/diskinfo.json /etc/rc.d/rc.diskinfo
 
 # Remove plugin
+removepkg &name;-&version;-x86_64-1
+
 rm -rf	/boot/config/plugins/&name;/ \
 		/usr/local/emhttp/plugins/&name;/
 
