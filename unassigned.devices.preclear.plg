@@ -22,8 +22,6 @@
 ###&name;
 ###&version;
 - Rem: Do not update UD with the disk preclear status.  Refreshing and updating the status of a preclear on the UD page has become complicated and is not really necessary when the preclear page and the footer icon can give the status.  A preclear can still be started on the UD page.
-
-###2025.05.22
 - Changed: Repository overhaul
 - Fixed: Missing preclear information on footer when running 7.1.0+
 - Fixed: PHP error from attempting to load non-existent stylesheet on 7.1.0+
