@@ -3,6 +3,9 @@ div.right.ud+span.status {
 	display: none;
 }
 
+.left {
+	display: inline-block;
+}
 .titleRight {
 	display: inline-block;
 	position: absolute;
