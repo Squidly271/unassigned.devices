@@ -5,6 +5,8 @@ div.right.ud+span.status {
 
 .titleRight {
 	display: inline-block;
+	position: absolute;
+	right: 1rem;
 }
 .ud_titleFix {
 	display: inline-block;
