@@ -14,9 +14,9 @@ c1b1a239556ba85b94c3d00ece419956  ./assets/javascript.js
 6d164c5cb92a0f41922ee217a92a3b32  ./assets/sweetalert2.js
 89709d0a6afc739b0f08fffbd2207385  ./event/array_started
 48e4ff1b43f613a40b3d1d3dcdcd4311  ./event/stopping_svcs
+705a6d0d072a942f5bba5a6c7a4753d9  ./include/Preclear.php
 04f510787fb59c211c014f7a3b4e4879  ./include/lib.php
 a9f1b955b7dc226ed3571bf18f6937f3  ./include/logger.php
-705a6d0d072a942f5bba5a6c7a4753d9  ./include/Preclear.php
 47605297d6cfa3bed137d3caec23cf07  ./scripts/clear_preclear.sh
 ea91f1f9c12e283143f4fd1828d98b6a  ./scripts/preclear.sh
 d1d2662f4e71406fac314e18cab5c64e  ./scripts/preclear_disk.sh

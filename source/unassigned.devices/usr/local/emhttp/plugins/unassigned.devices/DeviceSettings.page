@@ -287,7 +287,6 @@ esac
 EOT;
 ?>
 
-<link rel="stylesheet" href="<?autov('/webGui/styles/jquery.ui.css')?>">
 <link rel="stylesheet" href="<?autov('/webGui/styles/jquery.switchbutton.css')?>">
 <link rel="stylesheet" href="<?autov('/webGui/styles/jquery.filetree.css')?>" >
 <link rel="stylesheet" href="<?autov("/plugins/".UNASSIGNED_PLUGIN."/assets/unassigned.css")?>">

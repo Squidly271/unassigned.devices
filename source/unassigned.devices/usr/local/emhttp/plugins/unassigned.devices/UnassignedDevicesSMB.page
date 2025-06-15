@@ -127,7 +127,7 @@ _(Add)_ 'force user = nobody' _(to SMB share config)_?
 :end
 
 &nbsp;
-: <input type="submit" value='_(Apply)_'><input type="button" value="_(Done)_" onclick="done()">
+: <span><input type="submit" value='_(Apply)_'><input type="button" value="_(Done)_" onclick="done()"></span>
 </form>
 
 <script>

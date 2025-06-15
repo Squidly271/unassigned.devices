@@ -1,8 +1,15 @@
 /* Controls switch alignment on UD header line. */
-span.right.ud+span.status {
+div.right.ud+span.status {
 	display: none;
 }
 
+.titleRight {
+	display: inline-block;
+}
+.ud_titleFix {
+	display: inline-block;
+	padding-right: 2rem;
+}
 /* Disk mounts table formatting. */
 table.usb_mounts thead tr td:first-child {
 	padding-left: 10px;

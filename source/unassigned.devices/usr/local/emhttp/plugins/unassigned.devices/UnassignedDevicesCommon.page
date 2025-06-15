@@ -275,5 +275,5 @@ _(Debug Log Level)_:
 :end
 
 &nbsp;
-: <input type="submit" value='_(Apply)_'><input type="button" value="_(Done)_" onclick="done()">
+: <span><input type="submit" value='_(Apply)_'><input type="button" value="_(Done)_" onclick="done()"></span>
 </form>
