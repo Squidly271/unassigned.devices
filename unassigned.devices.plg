@@ -2,12 +2,12 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name		"unassigned.devices">
 <!ENTITY author		"dlandon">
-<!ENTITY version	"2025.04.14">
+<!ENTITY version	"2025.06.15">
 <!ENTITY launch		"Main/UnassignedDevices">
 <!ENTITY gitURL		"https://raw.githubusercontent.com/unraid/&name;/master">
 <!ENTITY pluginURL	"&gitURL;/&name;.plg">
 <!ENTITY supportURL	"https://forums.unraid.net/topic/92462-unassigned-devices-managing-disk-drives-and-remote-shares-outside-of-the-unraid-array/">
-<!ENTITY MD5		"335f38ca7b983e233f6f73eed92666ec">
+<!ENTITY MD5		"1c37befea2b9d890fe5511bf87027507">
 ]>
 
 <PLUGIN name="&name;"
@@ -21,6 +21,10 @@
 
 <CHANGES>
 ##&name;
+
+###2025.06.15
+- Fixed: Issues with black theme and popups
+- Fixed: Display aberrations on 7.2.x
 
 ###2025.04.14
 - Fix spurious syslog error on Unraid 7.1.x
